@@ -113,7 +113,7 @@ final class EnterPasswordViewController: UIViewController {
         guard let inputPassword = enterPasswordTextField.text,
               inputPassword.count == 4,
               !inputPassword.isEmpty else {
-            print("PIN должен быть 4х значным")
+            showErrorAlert(title: "Неверная длина", message: "PIN должен быть 4x значный")
             return
         }
         
@@ -121,7 +121,7 @@ final class EnterPasswordViewController: UIViewController {
         if inputPassword == manager.loadPassword() && inputPassword.count == 4 {
             performNavigationToMain()
         } else {
-            print("Неверный пароль!")
+            showErrorAlert(title: "Неверны PIN-код")
             enterPasswordTextField.text = ""
         }
     }

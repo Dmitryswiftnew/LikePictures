@@ -85,7 +85,6 @@
 				0AB90D3E2EF42E2D001F1A7B /* Assets.xcassets */,
 				0AB90D402EF42E2D001F1A7B /* LaunchScreen.storyboard */,
 				0AB90D432EF42E2D001F1A7B /* Info.plist */,
-				0AB90D492EF44722001F1A7B /* GlobalCoordinator.swift */,
 			);
 			path = LikePictures;
 			sourceTree = "<group>";
@@ -104,6 +103,7 @@
 		0AB90D582EF44F42001F1A7B /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				0AB90D492EF44722001F1A7B /* GlobalCoordinator.swift */,
 				0AB90D592EF44F75001F1A7B /* Keys.swift */,
 				0A6E1C032F0E865200A07A20 /* SaveLoadManager.swift */,
 			);

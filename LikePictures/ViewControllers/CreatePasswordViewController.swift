@@ -162,15 +162,24 @@ final class CreatePasswordViewController: UIViewController {
     private func createPasswordPressed() {
         guard let password = passwordTextField.text,
               let confirm = confirmPasswordTextField.text,
-              !password.isEmpty, !confirm.isEmpty else { return }
-        
-        if password == confirm && password.count == 4 {
-            let manager = SaveLoadManager()
-            manager.savePassword(password)
-            performNavigationToMain()
-        } else {
-            print("Пароли не совпадают или длина не 4!")
+              !password.isEmpty, !confirm.isEmpty else {
+            showErrorAlert(title: "Пустые поля", message: "Заполните все поля")
+            return
         }
+        
+        if password.count != 4 {
+            showErrorAlert(title: "Неверная длина", message: "PIN должен содержать 4 цифры")
+            return
+        }
+        
+        if password != confirm {
+            showErrorAlert(title: "Пароли не совпадают")
+            return
+        }
+        
+        let manager = SaveLoadManager()
+        manager.savePassword(password)
+        performNavigationToMain()
         
     }
     
