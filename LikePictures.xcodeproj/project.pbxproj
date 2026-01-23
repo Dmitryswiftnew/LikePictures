@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		0A6E1C042F0E865200A07A20 /* SaveLoadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6E1C032F0E865200A07A20 /* SaveLoadManager.swift */; };
 		0AB373D72F17F10900F9042B /* UIViewController+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB373D62F17F10900F9042B /* UIViewController+extension.swift */; };
+		0AB374032F2221F400F9042B /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB374022F2221F400F9042B /* ImageCell.swift */; };
+		0AB374052F2242EC00F9042B /* AddImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB374042F2242EC00F9042B /* AddImageViewController.swift */; };
 		0AB90D362EF42E2C001F1A7B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB90D352EF42E2C001F1A7B /* AppDelegate.swift */; };
 		0AB90D382EF42E2C001F1A7B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB90D372EF42E2C001F1A7B /* SceneDelegate.swift */; };
 		0AB90D3A2EF42E2C001F1A7B /* CreatePasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB90D392EF42E2C001F1A7B /* CreatePasswordViewController.swift */; };
@@ -25,6 +27,8 @@
 /* Begin PBXFileReference section */
 		0A6E1C032F0E865200A07A20 /* SaveLoadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveLoadManager.swift; sourceTree = "<group>"; };
 		0AB373D62F17F10900F9042B /* UIViewController+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+extension.swift"; sourceTree = "<group>"; };
+		0AB374022F2221F400F9042B /* ImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCell.swift; sourceTree = "<group>"; };
+		0AB374042F2242EC00F9042B /* AddImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddImageViewController.swift; sourceTree = "<group>"; };
 		0AB90D322EF42E2C001F1A7B /* LikePictures.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LikePictures.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AB90D352EF42E2C001F1A7B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0AB90D372EF42E2C001F1A7B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -59,6 +63,21 @@
 			path = Extension;
 			sourceTree = "<group>";
 		};
+		0AB374012F2221D200F9042B /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				0AB374022F2221F400F9042B /* ImageCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		0AB374062F2260E300F9042B /* Header */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Header;
+			sourceTree = "<group>";
+		};
 		0AB90D292EF42E2C001F1A7B = {
 			isa = PBXGroup;
 			children = (
@@ -78,6 +97,8 @@
 		0AB90D342EF42E2C001F1A7B /* LikePictures */ = {
 			isa = PBXGroup;
 			children = (
+				0AB374062F2260E300F9042B /* Header */,
+				0AB374012F2221D200F9042B /* Cells */,
 				0AB90D582EF44F42001F1A7B /* Models */,
 				0AB90D4D2EF448F9001F1A7B /* ViewControllers */,
 				0AB90D352EF42E2C001F1A7B /* AppDelegate.swift */,
@@ -95,6 +116,7 @@
 				0AB90D392EF42E2C001F1A7B /* CreatePasswordViewController.swift */,
 				0AB90D4B2EF448E5001F1A7B /* EnterPasswordViewController.swift */,
 				0AB90D542EF44D5D001F1A7B /* MainViewController.swift */,
+				0AB374042F2242EC00F9042B /* AddImageViewController.swift */,
 				0AB373D52F17F0D400F9042B /* Extension */,
 			);
 			path = ViewControllers;
@@ -194,9 +216,11 @@
 				0A6E1C042F0E865200A07A20 /* SaveLoadManager.swift in Sources */,
 				0AB90D4C2EF448E5001F1A7B /* EnterPasswordViewController.swift in Sources */,
 				0AB90D552EF44D5D001F1A7B /* MainViewController.swift in Sources */,
+				0AB374052F2242EC00F9042B /* AddImageViewController.swift in Sources */,
 				0AB90D5A2EF44F75001F1A7B /* Keys.swift in Sources */,
 				0AB90D362EF42E2C001F1A7B /* AppDelegate.swift in Sources */,
 				0AB90D382EF42E2C001F1A7B /* SceneDelegate.swift in Sources */,
+				0AB374032F2221F400F9042B /* ImageCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
