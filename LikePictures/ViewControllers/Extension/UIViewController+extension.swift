@@ -13,6 +13,29 @@ extension UIViewController {
         present(alert, animated: true)
     }
     
+   
+    // - MARK: Alert cancel button
+    
+    func showExitConfirmAlert(
+        title: String = "Выйти без сохранения",
+        message: String = "Изменения не будут сохранены",
+        onExit: @escaping () -> Void
+    ) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        let exitAction = UIAlertAction(title: title, style: .destructive) { _ in
+            onExit()
+        }
+        
+        alert.addAction(exitAction)
+        
+        let stayAction = UIAlertAction(title: "Остаться", style: .cancel)
+        alert.addAction(stayAction)
+        
+        present(alert, animated: true)
+        
+    }
+    
     
     
     

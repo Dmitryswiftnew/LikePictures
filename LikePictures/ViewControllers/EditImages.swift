@@ -1,15 +1,26 @@
 
-
 import Foundation
-import SnapKit
 import UIKit
+import SnapKit
 
 
-final class AddImageViewController: UIViewController  {
+final class EditImages: UIViewController {
     
     private var centerYConstraint: Constraint?
+    private var imageIndex: Int
     private var saveManager = SaveLoadManager()
+    private var allImageItems: [ImageItem] = []
+    private var currentIndex: Int = 0
     
+    init(imageIndex: Int) {
+           self.imageIndex = imageIndex
+           super.init(nibName: nil, bundle: nil)
+       }
+       
+       required init?(coder: NSCoder) {
+           fatalError("init(coder:) has not been implemented")
+       }
+        
     private let mainContainerView: UIView = {
         let view = UIView()
 //        view.backgroundColor = .red
@@ -20,8 +31,8 @@ final class AddImageViewController: UIViewController  {
     
     private var imageContainer: UIView = {
         let view = UIView()
-        view.backgroundColor = .red
-        view.alpha = 0.6
+//        view.backgroundColor = .red
+//        view.alpha = 0.6
         view.isUserInteractionEnabled = true
         return view
     }()
@@ -59,16 +70,21 @@ final class AddImageViewController: UIViewController  {
     
     private var photoImage: UIImageView = {
         let view = UIImageView()
-        let backImage = UIImage(systemName: "person.crop.circle.fill.badge.plus")
-        view.image = backImage
-        view.tintColor = .white
         view.backgroundColor = .lightGray
         view.contentMode = .scaleAspectFill
-        view.alpha = 1
         view.layer.masksToBounds = true
         view.isUserInteractionEnabled = true
         return view
     }()
+    
+    private let imageViewSecond: UIImageView = {
+        let image = UIImageView()
+//        image.backgroundColor = .lightGray
+        image.contentMode = .scaleAspectFill
+        image.layer.masksToBounds = true
+        return image
+    }()
+    
     
 
     private var textFiled: UITextField = {
@@ -87,6 +103,37 @@ final class AddImageViewController: UIViewController  {
     }()
     
     
+    private let buttonContainer: UIView = {
+        let view = UIView()
+        view.backgroundColor = .yellow
+        view.alpha = 0.6
+        view.isUserInteractionEnabled = true
+        return view
+    }()
+    
+    private let buttonLeft: UIButton = {
+        let button = UIButton(type: .system)
+        let arrowImage = UIImage(systemName: "arrow.left")
+        button.setImage(arrowImage, for: .normal)
+        return button
+    }()
+    
+    
+    private let buttonRight: UIButton = {
+        let button = UIButton(type: .system)
+        let arrowImage = UIImage(systemName: "arrow.right")
+        button.setImage(arrowImage, for: .normal)
+        return button
+    }()
+    
+    private let countLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .black
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 10, weight: .semibold)
+        return label
+    }()
+    
     
     private let buttonHeaderContainer: UIView = {
         let view = UIView()
@@ -101,12 +148,13 @@ final class AddImageViewController: UIViewController  {
         super.viewDidLoad()
         configureUI()
         configureNotifiacations()
+        
     }
     
     private func configureUI() {
-        view.backgroundColor = .green
+        view.backgroundColor = .blue
         
-        
+     
         view.addSubview(mainContainerView)
         mainContainerView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -155,7 +203,6 @@ final class AddImageViewController: UIViewController  {
             make.centerY.equalToSuperview()
         }
        
-       
         let actionCancel = UIAction { [weak self] _ in
             self?.showExitConfirmAlert {
                 self?.navigationController?.popViewController(animated: true)
@@ -164,8 +211,6 @@ final class AddImageViewController: UIViewController  {
         
         buttonCancel.addAction(actionCancel, for: .touchUpInside)
         
-        
-        
         imageContainer.addSubview(photoImage)
         photoImage.snp.makeConstraints { make in
             make.top.equalTo(imageContainer.snp.top)
@@ -173,8 +218,16 @@ final class AddImageViewController: UIViewController  {
             make.height.equalTo(photoImage.snp.width).multipliedBy(0.95)
         }
         
-        let tapImageGesture = UITapGestureRecognizer(target: self, action: #selector(photoImageTapped))
-        photoImage.addGestureRecognizer(tapImageGesture)
+        imageContainer.addSubview(imageViewSecond)
+        imageViewSecond.snp.makeConstraints { make in
+            make.edges.equalTo(photoImage)
+        }
+        
+        
+        
+        
+//        let tapImageGesture = UITapGestureRecognizer(target: self, action: #selector(photoImageTapped))
+//        photoImage.addGestureRecognizer(tapImageGesture)
         
         imageContainer.addSubview(textFiled)
         textFiled.snp.makeConstraints { make in
@@ -184,51 +237,69 @@ final class AddImageViewController: UIViewController  {
         }
         
        
+        imageContainer.addSubview(countLabel)
+        countLabel.snp.makeConstraints { make in
+            make.bottom.equalTo(textFiled.snp.top)
+            make.centerX.equalToSuperview()
+        }
+        
+        
+        mainContainerView.addSubview(buttonContainer)
+        buttonContainer.snp.makeConstraints { make in
+            make.top.equalTo(imageContainer.snp.bottom)
+            make.left.right.equalTo(imageContainer)
+            make.height.equalToSuperview().dividedBy(20)
+        }
+        
+        buttonContainer.addSubview(buttonLeft)
+        buttonLeft.snp.makeConstraints { make in
+            make.left.equalToSuperview()
+            make.centerY.equalToSuperview()
+            make.height.equalToSuperview()
+        }
+        
+        let actionLeft = UIAction { _ in
+            self.buttonLeftFlip() }
+        buttonLeft.addAction(actionLeft, for: .touchUpInside)
+        
+        
+        buttonContainer.addSubview(buttonRight)
+        buttonRight.snp.makeConstraints { make in
+            make.right.equalToSuperview()
+            make.centerY.equalToSuperview()
+            make.height.equalToSuperview()
+        }
+        
+        let actionRight = UIAction { _ in
+            self.buttonRightFlip()
+        }
+        buttonRight.addAction(actionRight, for: .touchUpInside)
         
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapDetected))
         view.addGestureRecognizer(tapRecognizer)
         
         
-    }
-    
-    
-    // - MARK: ImagePicker
-    
-    private func showPicker(_ sourceType: UIImagePickerController.SourceType) {
-        let imagePicker = UIImagePickerController()
-        imagePicker.delegate = self
-        imagePicker.sourceType = sourceType
-        present(imagePicker, animated: true)
-    }
-    
-    
-    
-    private func showImagePickerAlert() {
-        let alert = UIAlertController(
-            title: "Chose media source",
-            message: nil,
-            preferredStyle: .actionSheet
+        allImageItems = saveManager.loadUserImages()
+        guard !allImageItems.isEmpty,
+              imageIndex < allImageItems.count else { return }
+        
+        currentIndex = imageIndex
+        
+        view.layoutIfNeeded()
+        imageViewSecond.frame = CGRect(
+            x: photoImage.frame.maxX + 60,
+            y: photoImage.frame.minY,
+            width: photoImage.frame.width,
+            height: photoImage.frame.height
         )
         
-        let cameraAction = UIAlertAction(title: "Camera", style: .default) { [weak self] _ in
-            self?.showPicker(.camera)
-        }
-        alert.addAction(cameraAction)
+        updateUI()
         
-        let libraryAction = UIAlertAction(title: "Photo Library", style: .default) { [weak self] _ in
-            self?.showPicker(.photoLibrary)
-        }
-        alert.addAction(libraryAction)
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
-        alert.addAction(cancelAction)
-        
-        present(alert, animated: true)
     }
     
-    @objc func photoImageTapped() {         //
-        showImagePickerAlert()
-    }
+    
+   
     
     @objc func tapDetected() {
         textFiled.endEditing(true)
@@ -251,38 +322,99 @@ final class AddImageViewController: UIViewController  {
         }
     }
     
+//    // - MARK: Load current imag item
+//    
+//    private func loadCurrentImageItem() {
+//       
+//        let allImageItems = saveManager.loadUserImages()
+//        
+//        guard imageIndex < allImageItems.count else {
+//            return
+//        }
+//        let currentImageItem = allImageItems[imageIndex]
+//        if let image = saveManager.loadImage(name: currentImageItem.fileName) {
+//            photoImage.image = image
+//            textFiled.text = currentImageItem.description
+//            likeButton.isSelected = currentImageItem.isLiked
+//        }
+//        
+//    }
     
-    // - MARK: Autosave image
     
-    private func saveCurrentImage() {
-        guard let currentImage = photoImage.image,
-              currentImage != UIImage(systemName: "person.crop.circle.fill.badge.plus") else { return }
+    // - MARK: Update UI
+    
+    private func updateUI() {
+        let currentItem = allImageItems[currentIndex]
         
         
-        guard let fileName = saveManager.saveImage(image: currentImage) else {
-            return
+        if let image = saveManager.loadImage(name: currentItem.fileName) {
+            photoImage.image = image
         }
         
+        textFiled.text = currentItem.description
+        likeButton.isSelected = currentItem.isLiked
         
-        let newItem = ImageItem(
-            id: UUID().uuidString,
-            fileName: fileName,
-            description: textFiled.text?.isEmpty != true ? textFiled.text : nil,
-            isLiked: likeButton.isSelected)
+        countLabel.text = "\(currentIndex + 1) / \(allImageItems.count)"
         
-        if let mainViewController = navigationController?.viewControllers.first(where: { $0 is MainViewController }) as? MainViewController {
-            mainViewController.addImageItem(newItem)
+    }
+    
+   // - MARK: Flip Left and Right
+    
+    private func buttonRightFlip() {
+        guard !allImageItems.isEmpty else { return }
+        let nextIndex = (currentIndex + 1) % allImageItems.count
+        let nextItem = allImageItems[nextIndex]
+        
+        if let nextImage = saveManager.loadImage(name: nextItem.fileName) {
+            imageViewSecond.image = nextImage
+        }
+        
+        currentIndex = nextIndex
+        
+        let centerX = photoImage.frame.midX - imageViewSecond.frame.width / 2
+        imageViewSecond.frame.origin.x = view.frame.width
+        imageViewSecond.isHidden = false
+        
+        UIView.animate(withDuration: 0.5) {
+            self.imageViewSecond.frame.origin.x = centerX
+        } completion: { _ in
+            self.photoImage.image = self.imageViewSecond.image
+            self.imageViewSecond.frame.origin.x = self.view.frame.width
+            self.updateUI()
+            
+        }
+    
+    }
+    
+    private func buttonLeftFlip() {
+        guard !allImageItems.isEmpty else { return }
+        let prevIndex = (currentIndex - 1 + allImageItems.count) % allImageItems.count
+        let prevItem = allImageItems[prevIndex]
+        
+        imageViewSecond.image = photoImage.image
+        let centerX = photoImage.frame.midX - imageViewSecond.frame.width / 2
+        imageViewSecond.frame.origin.x = centerX
+        imageViewSecond.isHidden = false
+        
+        currentIndex = prevIndex
+        photoImage.image = saveManager.loadImage(name: prevItem.fileName)
+        
+        UIView.animate(withDuration: 0.5) {
+            self.imageViewSecond.frame.origin.x = -self.imageViewSecond.frame.width
+        } completion: { _ in
+            self.imageViewSecond.frame.origin.x = self.view.frame.width
+            self.imageViewSecond.isHidden = true
+            self.updateUI()
         }
     }
     
     
     
     
-    
+
     // - MARK: Back button navigation
     
    private func backButtonPressed() {
-       saveCurrentImage()
        navigationController?.popViewController(animated: true)
     }
     
@@ -332,19 +464,11 @@ final class AddImageViewController: UIViewController  {
         )
         
     }
-  
-}
-
-
-extension AddImageViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-        guard let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage else { return }
-        self.photoImage.image = image
-        picker.dismiss(animated: true)
-    }
     
-    func imagePickerControllerDidCancel (_ picker: UIImagePickerController) {
-        picker.dismiss(animated: true)
-    }
+    
     
 }
+    
+    
+    
+

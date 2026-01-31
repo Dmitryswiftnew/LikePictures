@@ -19,14 +19,13 @@ final class MainViewController: UIViewController {
         UIImage(systemName: "photo.badge.plus")
     ]
     
-    
-    private var userImagesArray = [
-        UIImage(named: "lol")
-    ]
+    private var saveManager = SaveLoadManager()
+    private var userImageItems: [ImageItem] = []
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        loadUserImages()
         configureUI()
     }
     
@@ -40,10 +39,30 @@ final class MainViewController: UIViewController {
             make.top.equalToSuperview().offset(100)
         }
         
-      
+        
     }
     
-  // - MARK: AddImageViewController transfer
+    // - MARK: LoadUserImages
+    
+    private func loadUserImages() {
+        userImageItems = saveManager.loadUserImages()
+        collectionView.reloadData()
+    }
+    
+    
+    // - MARK: Add Image item to collection
+    
+    func addImageItem(_ item: ImageItem) {
+        userImageItems.append(item)
+        saveManager.saveUserImages(userImageItems)
+        collectionView.reloadData()
+    }
+    
+    
+    
+    
+    
+    // - MARK: AddImageViewController transfer
     
     private func showAddImageViewController() {
         let addImageViewController = AddImageViewController()
@@ -60,9 +79,9 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
     func numberOfSections(in collectionView: UICollectionView) -> Int {  // временно
         1
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return systemImagesArray.count + userImagesArray.count 
+        return 1 + userImageItems.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -75,8 +94,9 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
             }
         } else {
             let userImageIndex = indexPath.item - systemImagesArray.count
-            if let userImage = userImagesArray[userImageIndex] {
-                cell.configure(with: userImage)
+            let item = userImageItems[userImageIndex]
+            if let image = saveManager.loadImage(name: item.fileName) {
+                cell.configure(with: image)
             }
         }
         return cell
@@ -100,9 +120,9 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
         if indexPath.item < systemImagesArray.count {
             showAddImageViewController()
         } else {
-            // нажато на фото
             let imageIndex = indexPath.item - systemImagesArray.count
-            print("редактируем фото номер \(imageIndex)")
+            let editViewController = EditImages(imageIndex: imageIndex)
+            navigationController?.pushViewController(editViewController, animated: true)
         }
     }
     
