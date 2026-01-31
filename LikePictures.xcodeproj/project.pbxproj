@@ -22,6 +22,9 @@
 		0AB90D532EF44936001F1A7B /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0AB90D522EF44936001F1A7B /* SnapKit */; };
 		0AB90D552EF44D5D001F1A7B /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB90D542EF44D5D001F1A7B /* MainViewController.swift */; };
 		0AB90D5A2EF44F75001F1A7B /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB90D592EF44F75001F1A7B /* Keys.swift */; };
+		0ACFD09F2F2B5BCB00D33F02 /* UserDefaults+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACFD09E2F2B5BCB00D33F02 /* UserDefaults+extension.swift */; };
+		0ACFD0A12F2B633500D33F02 /* ImageItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACFD0A02F2B633500D33F02 /* ImageItem.swift */; };
+		0ACFD0A32F2B67DE00D33F02 /* EditImages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACFD0A22F2B67DE00D33F02 /* EditImages.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +43,9 @@
 		0AB90D4B2EF448E5001F1A7B /* EnterPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterPasswordViewController.swift; sourceTree = "<group>"; };
 		0AB90D542EF44D5D001F1A7B /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		0AB90D592EF44F75001F1A7B /* Keys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keys.swift; sourceTree = "<group>"; };
+		0ACFD09E2F2B5BCB00D33F02 /* UserDefaults+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+extension.swift"; sourceTree = "<group>"; };
+		0ACFD0A02F2B633500D33F02 /* ImageItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageItem.swift; sourceTree = "<group>"; };
+		0ACFD0A22F2B67DE00D33F02 /* EditImages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditImages.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				0AB373D62F17F10900F9042B /* UIViewController+extension.swift */,
+				0ACFD09E2F2B5BCB00D33F02 /* UserDefaults+extension.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -69,13 +76,6 @@
 				0AB374022F2221F400F9042B /* ImageCell.swift */,
 			);
 			path = Cells;
-			sourceTree = "<group>";
-		};
-		0AB374062F2260E300F9042B /* Header */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Header;
 			sourceTree = "<group>";
 		};
 		0AB90D292EF42E2C001F1A7B = {
@@ -97,7 +97,6 @@
 		0AB90D342EF42E2C001F1A7B /* LikePictures */ = {
 			isa = PBXGroup;
 			children = (
-				0AB374062F2260E300F9042B /* Header */,
 				0AB374012F2221D200F9042B /* Cells */,
 				0AB90D582EF44F42001F1A7B /* Models */,
 				0AB90D4D2EF448F9001F1A7B /* ViewControllers */,
@@ -117,6 +116,7 @@
 				0AB90D4B2EF448E5001F1A7B /* EnterPasswordViewController.swift */,
 				0AB90D542EF44D5D001F1A7B /* MainViewController.swift */,
 				0AB374042F2242EC00F9042B /* AddImageViewController.swift */,
+				0ACFD0A22F2B67DE00D33F02 /* EditImages.swift */,
 				0AB373D52F17F0D400F9042B /* Extension */,
 			);
 			path = ViewControllers;
@@ -125,6 +125,7 @@
 		0AB90D582EF44F42001F1A7B /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				0ACFD0A02F2B633500D33F02 /* ImageItem.swift */,
 				0AB90D492EF44722001F1A7B /* GlobalCoordinator.swift */,
 				0AB90D592EF44F75001F1A7B /* Keys.swift */,
 				0A6E1C032F0E865200A07A20 /* SaveLoadManager.swift */,
@@ -220,6 +221,9 @@
 				0AB90D5A2EF44F75001F1A7B /* Keys.swift in Sources */,
 				0AB90D362EF42E2C001F1A7B /* AppDelegate.swift in Sources */,
 				0AB90D382EF42E2C001F1A7B /* SceneDelegate.swift in Sources */,
+				0ACFD0A12F2B633500D33F02 /* ImageItem.swift in Sources */,
+				0ACFD0A32F2B67DE00D33F02 /* EditImages.swift in Sources */,
+				0ACFD09F2F2B5BCB00D33F02 /* UserDefaults+extension.swift in Sources */,
 				0AB374032F2221F400F9042B /* ImageCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
