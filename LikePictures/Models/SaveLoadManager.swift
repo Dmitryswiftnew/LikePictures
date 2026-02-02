@@ -10,6 +10,10 @@ enum Keys: String {
 final class SaveLoadManager {
     
     private let defaults = UserDefaults.standard
+    private var documentsDirectory: URL {
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    }
+    
     // - MARK: Password
     
     func savePassword(_ password: String) {
@@ -70,6 +74,21 @@ final class SaveLoadManager {
     func loadUserImages() -> [ImageItem] {
         defaults.get(decodableType: [ImageItem].self, forKey: Keys.imageKey.rawValue) ?? [] 
     }
+    
+    func deleteImage(at index: Int, from items: inout [ImageItem]) {
+        guard index < items.count else { return }
+        
+        let itemToDelete = items[index]
+        
+        let filePath = documentsDirectory.appendingPathComponent(itemToDelete.fileName)
+        try? FileManager.default.removeItem(at: filePath)
+        
+        items.remove(at: index)
+        
+        saveUserImages(items)
+    }
+    
+    
     
 }
 
