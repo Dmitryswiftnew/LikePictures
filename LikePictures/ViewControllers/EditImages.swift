@@ -11,6 +11,9 @@ final class EditImages: UIViewController {
     private var saveManager = SaveLoadManager()
     private var allImageItems: [ImageItem] = []
     private var currentIndex: Int = 0
+    private var isZoomed = false
+    private var originalFrame: CGRect = .zero
+    private var dismissTapGesture: UITapGestureRecognizer?
     
     init(imageIndex: Int) {
            self.imageIndex = imageIndex
@@ -23,16 +26,12 @@ final class EditImages: UIViewController {
         
     private let mainContainerView: UIView = {
         let view = UIView()
-//        view.backgroundColor = .red
-//        view.alpha = 0.2
         view.isUserInteractionEnabled = true
         return view
     }()
     
     private var imageContainer: UIView = {
         let view = UIView()
-//        view.backgroundColor = .red
-//        view.alpha = 0.6
         view.isUserInteractionEnabled = true
         return view
     }()
@@ -79,7 +78,6 @@ final class EditImages: UIViewController {
     
     private let imageViewSecond: UIImageView = {
         let image = UIImageView()
-//        image.backgroundColor = .lightGray
         image.contentMode = .scaleAspectFill
         image.layer.masksToBounds = true
         return image
@@ -105,8 +103,6 @@ final class EditImages: UIViewController {
     
     private let buttonContainer: UIView = {
         let view = UIView()
-        view.backgroundColor = .yellow
-        view.alpha = 0.6
         view.isUserInteractionEnabled = true
         return view
     }()
@@ -137,8 +133,6 @@ final class EditImages: UIViewController {
     
     private let buttonHeaderContainer: UIView = {
         let view = UIView()
-//        view.backgroundColor = .red
-//        view.alpha = 0.6
         view.isUserInteractionEnabled = true
         return view
     }()
@@ -218,16 +212,12 @@ final class EditImages: UIViewController {
             make.height.equalTo(photoImage.snp.width).multipliedBy(0.95)
         }
         
-        imageContainer.addSubview(imageViewSecond)
+        photoImage.addSubview(imageViewSecond)
         imageViewSecond.snp.makeConstraints { make in
-            make.edges.equalTo(photoImage)
+            make.edges.equalToSuperview()
         }
+        imageViewSecond.isHidden = true
         
-        
-        
-        
-//        let tapImageGesture = UITapGestureRecognizer(target: self, action: #selector(photoImageTapped))
-//        photoImage.addGestureRecognizer(tapImageGesture)
         
         imageContainer.addSubview(textFiled)
         textFiled.snp.makeConstraints { make in
@@ -239,8 +229,10 @@ final class EditImages: UIViewController {
        
         imageContainer.addSubview(countLabel)
         countLabel.snp.makeConstraints { make in
-            make.bottom.equalTo(textFiled.snp.top)
             make.centerX.equalToSuperview()
+            make.top.equalTo(photoImage.snp.bottom)
+            make.bottom.equalTo(textFiled.snp.top)
+            make.height.equalToSuperview().dividedBy(20)
         }
         
         
@@ -258,9 +250,20 @@ final class EditImages: UIViewController {
             make.height.equalToSuperview()
         }
         
+        let tapImageGesture = UITapGestureRecognizer(target: self, action: #selector(photoImageTapped))
+        tapImageGesture.numberOfTapsRequired = 2
+        photoImage.addGestureRecognizer(tapImageGesture)
+        print("✅ Tap gesture добавлен: \(photoImage.gestureRecognizers?.count ?? 0)")
+        
+        
         let actionLeft = UIAction { _ in
             self.buttonLeftFlip() }
         buttonLeft.addAction(actionLeft, for: .touchUpInside)
+        
+        let leftSwipeRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(buttonLeftFlip))
+        leftSwipeRecognizer.direction = .left
+        photoImage.addGestureRecognizer(leftSwipeRecognizer)
+        
         
         
         buttonContainer.addSubview(buttonRight)
@@ -275,8 +278,18 @@ final class EditImages: UIViewController {
         }
         buttonRight.addAction(actionRight, for: .touchUpInside)
         
+        
+        let rightSwipeRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(buttonRightFlip))
+        rightSwipeRecognizer.direction = .right
+        photoImage.addGestureRecognizer(rightSwipeRecognizer)
+        
+        
+    
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapDetected))
         view.addGestureRecognizer(tapRecognizer)
+        
+//        leftSwipeRecognizer.require(toFail: tapImageGesture)
+//        rightSwipeRecognizer.require(toFail: tapImageGesture)
         
         
         allImageItems = saveManager.loadUserImages()
@@ -294,20 +307,15 @@ final class EditImages: UIViewController {
         )
         
         updateUI()
-        
-        
+    
     }
     
-    
-   
     
     @objc func tapDetected() {
         textFiled.endEditing(true)
     }
     
-    
-    
-    
+
     // - MARK: like button tapped
     
     private func likeButttonTaped() {
@@ -321,25 +329,6 @@ final class EditImages: UIViewController {
             }
         }
     }
-    
-//    // - MARK: Load current imag item
-//    
-//    private func loadCurrentImageItem() {
-//       
-//        let allImageItems = saveManager.loadUserImages()
-//        
-//        guard imageIndex < allImageItems.count else {
-//            return
-//        }
-//        let currentImageItem = allImageItems[imageIndex]
-//        if let image = saveManager.loadImage(name: currentImageItem.fileName) {
-//            photoImage.image = image
-//            textFiled.text = currentImageItem.description
-//            likeButton.isSelected = currentImageItem.isLiked
-//        }
-//        
-//    }
-    
     
     // - MARK: Update UI
     
@@ -360,7 +349,9 @@ final class EditImages: UIViewController {
     
    // - MARK: Flip Left and Right
     
-    private func buttonRightFlip() {
+    @objc private func buttonRightFlip() {
+        imageViewSecond.isHidden = false
+        imageContainer.bringSubviewToFront(imageViewSecond)
         guard !allImageItems.isEmpty else { return }
         let nextIndex = (currentIndex + 1) % allImageItems.count
         let nextItem = allImageItems[nextIndex]
@@ -383,10 +374,12 @@ final class EditImages: UIViewController {
             self.updateUI()
             
         }
-    
+        
     }
     
-    private func buttonLeftFlip() {
+    @objc private func buttonLeftFlip() {
+        imageViewSecond.isHidden = false
+        imageContainer.bringSubviewToFront(imageViewSecond)
         guard !allImageItems.isEmpty else { return }
         let prevIndex = (currentIndex - 1 + allImageItems.count) % allImageItems.count
         let prevItem = allImageItems[prevIndex]
@@ -408,13 +401,113 @@ final class EditImages: UIViewController {
         }
     }
     
+    // - MARK: Update current image
+    
+    private func updateCurrentImageItem() {
+        guard !allImageItems.isEmpty else { return }
+        let currentItem = allImageItems[currentIndex]
+        
+        currentItem.description = textFiled.text?.isEmpty != true ? textFiled.text : nil
+        currentItem.isLiked = likeButton.isSelected
+        
+        allImageItems[currentIndex] = currentItem
+        
+        saveManager.saveUserImages(allImageItems)
+    }
+    
+    // - MARK: Zoom image
+    
+    @objc private func photoImageTapped() {
+        print("🖐️ TAP РАБОТАЕТ!")
+        if isZoomed {
+            zoomOut()
+        } else {
+            zoomIn()
+        }
+    }
     
     
+    private func zoomIn() {
+        print("🔍 ZOOM IN!")
+        originalFrame = photoImage.convert(photoImage.bounds, to: view)
+        
+        
+        mainContainerView.bringSubviewToFront(imageContainer)
+        imageContainer.bringSubviewToFront(photoImage)
+        
+        UIView.animate(withDuration: 0.3, animations: {
+            self.photoImage.frame = self.view.bounds.insetBy(dx: 0, dy: 20)
+            self.photoImage.contentMode = .scaleAspectFill
+            self.photoImage.layer.cornerRadius = 0
+            self.photoImage.layer.masksToBounds = false
+        })
+        
+        buttonHeaderContainer.isHidden = true
+        buttonContainer.isHidden = true
+        textFiled.isHidden = true
+        countLabel.isHidden = true
+        
+        
+        addDismissGesture()
+        isZoomed = true
+        
+        
+    }
+    
+    private func zoomOut() {
+        UIView.animate(withDuration: 0.3, animations:  {
+            self.photoImage.frame = self.originalFrame
+            self.photoImage.contentMode = .scaleAspectFill
+            self.photoImage.layer.cornerRadius = 0
+            self.photoImage.layer.masksToBounds = true
+            self.photoImage.backgroundColor = .lightGray
+        }) { _ in
+            
+            self.buttonHeaderContainer.isHidden = false
+            self.buttonContainer.isHidden = false
+            self.textFiled.isHidden = false
+            self.countLabel.isHidden = false
+            self.imageContainer.isHidden = false
+            
+            self.imageContainer.bringSubviewToFront(self.photoImage)
+            self.imageViewSecond.isHidden = true
+            
+            self.photoImage.snp.makeConstraints { make in
+                make.top.equalTo(self.imageContainer.snp.top)
+                make.left.right.equalToSuperview()
+                make.height.equalTo(self.photoImage.snp.width).multipliedBy(0.95)
+            }
+            
+            self.view.layoutIfNeeded()
+        }
+        
+        removeDismissGesture()
+        isZoomed = false
+    }
+    
+    
+    private func addDismissGesture() {
+        dismissTapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissZoom))
+        dismissTapGesture.map { view.addGestureRecognizer($0) }
+    }
+    
+    private func removeDismissGesture() {
+        if let dismissGesture = dismissTapGesture {
+            view.removeGestureRecognizer(dismissGesture)
+            dismissTapGesture = nil
+        }
+    }
     
 
+    
+    @objc private func dismissZoom() {
+        zoomOut()
+    }
+    
     // - MARK: Back button navigation
     
    private func backButtonPressed() {
+       updateCurrentImageItem()
        navigationController?.popViewController(animated: true)
     }
     
