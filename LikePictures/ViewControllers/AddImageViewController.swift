@@ -12,16 +12,12 @@ final class AddImageViewController: UIViewController  {
     
     private let mainContainerView: UIView = {
         let view = UIView()
-//        view.backgroundColor = .red
-//        view.alpha = 0.2
         view.isUserInteractionEnabled = true
         return view
     }()
     
     private var imageContainer: UIView = {
         let view = UIView()
-        view.backgroundColor = .red
-        view.alpha = 0.6
         view.isUserInteractionEnabled = true
         return view
     }()
@@ -90,8 +86,6 @@ final class AddImageViewController: UIViewController  {
     
     private let buttonHeaderContainer: UIView = {
         let view = UIView()
-//        view.backgroundColor = .red
-//        view.alpha = 0.6
         view.isUserInteractionEnabled = true
         return view
     }()
@@ -183,11 +177,9 @@ final class AddImageViewController: UIViewController  {
             make.height.equalToSuperview().multipliedBy(1.0 / 9.0)
         }
         
-       
-        
+
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapDetected))
         view.addGestureRecognizer(tapRecognizer)
-        
         
     }
     
@@ -234,9 +226,7 @@ final class AddImageViewController: UIViewController  {
         textFiled.endEditing(true)
     }
     
-    
-    
-    
+
     // - MARK: like button tapped
     
     private func likeButttonTaped() {
@@ -270,14 +260,12 @@ final class AddImageViewController: UIViewController  {
             description: textFiled.text?.isEmpty != true ? textFiled.text : nil,
             isLiked: likeButton.isSelected)
         
+
+        
         if let mainViewController = navigationController?.viewControllers.first(where: { $0 is MainViewController }) as? MainViewController {
             mainViewController.addImageItem(newItem)
         }
     }
-    
-    
-    
-    
     
     // - MARK: Back button navigation
     
