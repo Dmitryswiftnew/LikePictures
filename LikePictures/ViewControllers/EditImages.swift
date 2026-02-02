@@ -137,6 +137,17 @@ final class EditImages: UIViewController {
         return view
     }()
     
+    private let deleteButton: UIButton = {
+        let button = UIButton(type: .system)
+        let trashImage = UIImage(systemName: "trash")
+        button.setImage(trashImage, for: .normal)
+        button.tintColor = .systemRed
+        return button
+    }()
+    
+    
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -146,7 +157,7 @@ final class EditImages: UIViewController {
     }
     
     private func configureUI() {
-        view.backgroundColor = .blue
+        view.backgroundColor = .lightGray
         
      
         view.addSubview(mainContainerView)
@@ -250,6 +261,22 @@ final class EditImages: UIViewController {
             make.height.equalToSuperview()
         }
         
+        buttonContainer.addSubview(deleteButton)
+        deleteButton.snp.makeConstraints { make in
+            make.centerX.centerY.equalToSuperview()
+        }
+        
+        
+        let deleteAction = UIAction { _ in
+            self.showDeleteConfirmAlert {
+                self.deleteCurrentImage()
+            }
+        }
+        
+        deleteButton.addAction(deleteAction, for: .touchUpInside)
+        
+        
+        
         let tapImageGesture = UITapGestureRecognizer(target: self, action: #selector(photoImageTapped))
         tapImageGesture.numberOfTapsRequired = 2
         photoImage.addGestureRecognizer(tapImageGesture)
@@ -287,10 +314,6 @@ final class EditImages: UIViewController {
     
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapDetected))
         view.addGestureRecognizer(tapRecognizer)
-        
-//        leftSwipeRecognizer.require(toFail: tapImageGesture)
-//        rightSwipeRecognizer.require(toFail: tapImageGesture)
-        
         
         allImageItems = saveManager.loadUserImages()
         guard !allImageItems.isEmpty,
@@ -498,11 +521,55 @@ final class EditImages: UIViewController {
         }
     }
     
-
-    
     @objc private func dismissZoom() {
         zoomOut()
     }
+    
+    
+    // - MARK: Delete current image
+    
+    private func deleteCurrentImage() {
+        saveManager.deleteImage(at: currentIndex, from: &allImageItems)
+        
+        if allImageItems.isEmpty {
+            navigationController?.popViewController(animated: true)
+            return
+        }
+        
+        currentIndex = min(currentIndex, allImageItems.count - 1)
+        animateDeleteLeft {
+            self.updateUI()
+        }
+    }
+    
+    
+    private func animateDeleteLeft(completion: @escaping () -> Void) {
+        let centerX = photoImage.frame.midX - imageViewSecond.frame.width / 2
+        
+        let nextItem = allImageItems[currentIndex]
+        if let nextImage = saveManager.loadImage(name: nextItem.fileName) {
+            imageViewSecond.image = nextImage
+        }
+        imageViewSecond.frame.origin.x = centerX
+        imageViewSecond.isHidden = false
+        
+        
+        UIView.animate(withDuration: 0.4) {
+            self.photoImage.frame.origin.x = -self.photoImage.frame.width
+        } completion: { _ in
+            self.photoImage.frame.origin.x = centerX
+            self.photoImage.image = self.imageViewSecond.image
+            self.imageViewSecond.frame.origin.x = self.view.frame.width
+            self.imageViewSecond.isHidden = true
+            completion()
+        }
+    }
+    
+    
+    
+    
+    
+    
     
     // - MARK: Back button navigation
     

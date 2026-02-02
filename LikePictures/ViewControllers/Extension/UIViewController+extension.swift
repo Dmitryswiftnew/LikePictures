@@ -36,7 +36,25 @@ extension UIViewController {
         
     }
     
+    // - MARK: Alert delete button
     
-    
-    
+    func showDeleteConfirmAlert(
+        title: String = "Удалить изображение?",
+        message: String = "Картинка и комментарий будут удалены навсегда",
+        onDelete: @escaping () -> Void
+    ) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { _ in
+            onDelete()
+        }
+        
+        alert.addAction(deleteAction)
+        
+        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true)
+    }
+
 }

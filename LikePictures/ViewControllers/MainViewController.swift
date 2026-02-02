@@ -29,6 +29,13 @@ final class MainViewController: UIViewController {
         configureUI()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        loadUserImages()
+    }
+    
+    
+    
     private func configureUI() {
         view.backgroundColor = .yellow
         
@@ -45,8 +52,12 @@ final class MainViewController: UIViewController {
     // - MARK: LoadUserImages
     
     private func loadUserImages() {
-        userImageItems = saveManager.loadUserImages()
-        collectionView.reloadData()
+        let newItems = saveManager.loadUserImages()
+        if  newItems.count != userImageItems.count {
+            userImageItems = newItems
+            collectionView.reloadData()
+            print("🔄 MainVC: Загружено \(userImageItems.count) изображений")
+        }
     }
     
     
