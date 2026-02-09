@@ -75,6 +75,8 @@ final class SaveLoadManager {
         defaults.get(decodableType: [ImageItem].self, forKey: Keys.imageKey.rawValue) ?? [] 
     }
     
+    // - MARK: Delete image and description 
+    
     func deleteImage(at index: Int, from items: inout [ImageItem]) {
         guard index < items.count else { return }
         

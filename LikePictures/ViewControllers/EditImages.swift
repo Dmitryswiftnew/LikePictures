@@ -2,7 +2,7 @@
 import Foundation
 import UIKit
 import SnapKit
-
+import AudioToolbox
 
 final class EditImages: UIViewController {
     
@@ -84,7 +84,6 @@ final class EditImages: UIViewController {
     }()
     
     
-
     private var textFiled: UITextField = {
         let textField = UITextField()
         let attributes: [NSAttributedString.Key: Any] = [
@@ -146,15 +145,15 @@ final class EditImages: UIViewController {
     }()
     
     
-    
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
         configureNotifiacations()
         
     }
+    
+    // - MARK: Configure UI
+    
     
     private func configureUI() {
         view.backgroundColor = .lightGray
@@ -270,19 +269,17 @@ final class EditImages: UIViewController {
         let deleteAction = UIAction { _ in
             self.showDeleteConfirmAlert {
                 self.deleteCurrentImage()
+                AudioServicesPlaySystemSound(1075)
             }
         }
         
         deleteButton.addAction(deleteAction, for: .touchUpInside)
         
         
-        
         let tapImageGesture = UITapGestureRecognizer(target: self, action: #selector(photoImageTapped))
         tapImageGesture.numberOfTapsRequired = 2
         photoImage.addGestureRecognizer(tapImageGesture)
-        print("✅ Tap gesture добавлен: \(photoImage.gestureRecognizers?.count ?? 0)")
-        
-        
+   
         let actionLeft = UIAction { _ in
             self.buttonLeftFlip() }
         buttonLeft.addAction(actionLeft, for: .touchUpInside)
@@ -441,7 +438,6 @@ final class EditImages: UIViewController {
     // - MARK: Zoom image
     
     @objc private func photoImageTapped() {
-        print("🖐️ TAP РАБОТАЕТ!")
         if isZoomed {
             zoomOut()
         } else {
@@ -451,9 +447,7 @@ final class EditImages: UIViewController {
     
     
     private func zoomIn() {
-        print("🔍 ZOOM IN!")
         originalFrame = photoImage.convert(photoImage.bounds, to: view)
-        
         
         mainContainerView.bringSubviewToFront(imageContainer)
         imageContainer.bringSubviewToFront(photoImage)
@@ -463,6 +457,7 @@ final class EditImages: UIViewController {
             self.photoImage.contentMode = .scaleAspectFill
             self.photoImage.layer.cornerRadius = 0
             self.photoImage.layer.masksToBounds = false
+            self.view.backgroundColor = .black
         })
         
         buttonHeaderContainer.isHidden = true
@@ -484,6 +479,8 @@ final class EditImages: UIViewController {
             self.photoImage.layer.cornerRadius = 0
             self.photoImage.layer.masksToBounds = true
             self.photoImage.backgroundColor = .lightGray
+            self.view.backgroundColor = .lightGray
+            
         }) { _ in
             
             self.buttonHeaderContainer.isHidden = false
@@ -494,6 +491,7 @@ final class EditImages: UIViewController {
             
             self.imageContainer.bringSubviewToFront(self.photoImage)
             self.imageViewSecond.isHidden = true
+            
             
             self.photoImage.snp.makeConstraints { make in
                 make.top.equalTo(self.imageContainer.snp.top)
@@ -565,12 +563,7 @@ final class EditImages: UIViewController {
         }
     }
     
-    
-    
-    
-    
-    
-    
+
     // - MARK: Back button navigation
     
    private func backButtonPressed() {
