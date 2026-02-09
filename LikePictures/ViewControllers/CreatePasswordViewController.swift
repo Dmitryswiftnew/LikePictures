@@ -1,254 +1,197 @@
 import UIKit
 import SnapKit
 import KeychainSwift
+import AudioToolbox
 
 final class CreatePasswordViewController: UIViewController {
     
-    private var centerYConstraint: Constraint?
+    private var firstPassword = ""
+    private var secondPassword = ""
+    private var isFirstStep = true
     
-    private let mainImage: UIImageView = {
-        let obj = UIImageView()
-        obj.image = UIImage(named: "CrPassword")
-        obj.contentMode = .scaleAspectFill
-        obj.clipsToBounds = true
-        return obj
+    private let dotViews: [UIImageView] = (0..<4).map { _ in
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "circle")
+        imageView.tintColor = .white
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }
+    
+    private let hiddenTextField: UITextField = {
+        let textField = UITextField()
+        textField.keyboardType = .numberPad
+        textField.isHidden = true
+        return textField
     }()
     
-    private let passwordTextField: UITextField = {
-        let obj = UITextField()
-        let attributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.black,
-            .font: UIFont.systemFont(ofSize: 20,weight: .regular)
-        ]
-        obj.attributedPlaceholder = NSAttributedString(string: "Ввведите 4-значный PIN", attributes: attributes)
-        
-//        textField.placeholder = "Введите пароль"
-        obj.backgroundColor = .white.withAlphaComponent(0.5)
-        obj.layer.borderColor = UIColor.white.cgColor
-        obj.layer.borderWidth = 2
-        obj.layer.cornerRadius = 12
-        obj.textColor = .black
-        obj.isSecureTextEntry = true
-        return obj
+    private let dotsContainer = UIView()
+    
+    private let instructionLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.font = .systemFont(ofSize: 18, weight: .medium)
+        label.textAlignment = .center
+        return label
     }()
     
-    private let confirmPasswordTextField: UITextField = {
-        let obj = UITextField()
-        let attributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.black,
-            .font: UIFont.systemFont(ofSize: 20,weight: .regular)
-        ]
-        obj.attributedPlaceholder = NSAttributedString(string: "Подтвердите PIN", attributes: attributes)
-//        textField.placeholder = "Подтвердите PIN"
-        obj.backgroundColor = .white.withAlphaComponent(0.5)
-        obj.layer.borderColor = UIColor.white.cgColor
-        obj.layer.borderWidth = 2
-        obj.layer.cornerRadius = 12
-        obj.textColor = .black
-        obj.isSecureTextEntry = true
-        return obj
+    private let dotsStackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.spacing = 20
+        stack.distribution = .fillEqually
+        return stack
     }()
-    
-    
-    private let createPasswordButton: UIButton = {
-        let obj = UIButton(type: .system)
-        obj.setTitle("Создать пароль", for: .normal)
-        obj.setTitleColor(.white, for: .normal)
-        obj.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        obj.layer.borderWidth = 2
-        obj.layer.borderColor = UIColor.white.cgColor
-        obj.layer.cornerRadius = 12
-        obj.contentEdgeInsets = UIEdgeInsets(top: 14, left: 40, bottom: 14, right: 40)
-        return obj
-    }()
-    
-    private let mainContainerView: UIView = {
-        let obj = UIView()
-//        view.backgroundColor = .red
-//        view.alpha = 0.2
-        obj.isUserInteractionEnabled = true
-        return obj
-    }()
-    
-    private let containerTextField: UIView = {
-        let obj = UIView()
-//        view.backgroundColor = .green
-//        view.alpha = 0.3
-        return obj
-    }()
-    
-    
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         configureUI()
-        configureNotifiacations()
-//        let manager = SaveLoadManager()
-//            print("Картинка:", UIImage(named: "CreatePassword") != nil)
-//
-//            
-//
-//            manager.savePassword("1234")
-//            print("Сохранён пароль:", manager.loadPassword() ?? "nil")
-//            print("Флаг создан:", manager.isPasswordCreated())
-//            manager.resetPassword()
-        
+        startFirstStep()
     }
     
     // - MARK: Configure UI
     
-    func configureUI() {
-        view.backgroundColor = .systemBackground
+    private func configureUI() {
+        view.backgroundColor = .black
         
-        view.addSubview(mainImage)
-        mainImage.snp.makeConstraints { make in
+        dotViews.forEach { dotsStackView.addArrangedSubview($0) }
+        
+        dotsContainer.addSubview(dotsStackView)
+        dotsStackView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         
-        
-        view.addSubview(mainContainerView)
-        mainContainerView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        
-        mainContainerView.addSubview(containerTextField)
-        containerTextField.snp.makeConstraints { make in
-//            make.width.equalToSuperview().inset(40)
-            make.height.equalToSuperview().multipliedBy(1.0 / 3.0)
+        view.addSubview(dotsContainer)
+        dotsContainer.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            self.centerYConstraint = make.centerY.equalTo(mainContainerView).constraint
-        }
-        
-        containerTextField.addSubview(passwordTextField)
-        passwordTextField.snp.makeConstraints { make in
-            make.top.equalTo(containerTextField.snp.top)
-            make.left.right.equalTo(containerTextField).inset(20)
-            make.height.equalTo(50)
-        }
-        
-        containerTextField.addSubview(confirmPasswordTextField)
-        confirmPasswordTextField.snp.makeConstraints { make in
-            make.center.equalTo(containerTextField)
-            make.left.right.equalTo(passwordTextField)
-            make.height.equalTo(passwordTextField)
-        }
-        
-        containerTextField.addSubview(createPasswordButton)
-        createPasswordButton.snp.makeConstraints { make in
-            make.bottom.equalTo(containerTextField.snp.bottom)
-            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().offset(-50)
+            make.width.equalTo(200)
             make.height.equalTo(40)
         }
         
-        
-        let action = UIAction { _ in
-            self.createPasswordPressed()
+        view.addSubview(instructionLabel)
+        instructionLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(dotsContainer.snp.top).offset(-30)
         }
-        
-        createPasswordButton.addAction(action, for: .touchUpInside)
-        
-        
-        
-        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapDetected))
-        view.addGestureRecognizer(tapRecognizer)
-        
-        
-    }
-    
-    // - MARK: Create Password Button
-    
-    private func createPasswordPressed() {
-        guard let password = passwordTextField.text,
-              let confirm = confirmPasswordTextField.text,
-              !password.isEmpty, !confirm.isEmpty else {
-            showErrorAlert(title: "Пустые поля", message: "Заполните все поля")
-            return
-        }
-        
-        if password.count != 4 {
-            showErrorAlert(title: "Неверная длина", message: "PIN должен содержать 4 цифры")
-            return
-        }
-        
-        if password != confirm {
-            showErrorAlert(title: "Пароли не совпадают")
-            return
-        }
-        
-        let manager = SaveLoadManager()
-        manager.savePassword(password)
-        performNavigationToMain()
-        
+        view.addSubview(hiddenTextField)
+        hiddenTextField.delegate = self
+        hiddenTextField.becomeFirstResponder()
     }
     
     
-    
-    
-    
-    
-    // - MARK: Keybord switch
-    
-    @objc func keyboardWillShow(_ notification: Notification) {
-        guard let userInfo = notification.userInfo,
-              let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval,
-              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
-        else { return }
-        centerYConstraint?.update(offset: -keyboardFrame.height / 2)
-        
-        UIView.animate(withDuration: duration) {
-              self.view.layoutIfNeeded()
-          }
+    private func startFirstStep() {
+        isFirstStep = true
+        firstPassword = ""
+        hiddenTextField.text = ""
+        instructionLabel.text = "Создайте 4-значный PIN"
+        clearDots()
+        dotsContainer.alpha = 1
+        updateDots()
     }
     
-    @objc func keyboardWillHide(_ notification: Notification) {
-        guard let userInfo = notification.userInfo,
-              let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval
-        else { return }
+    private func startSecondStep() {
+        isFirstStep = false
+        instructionLabel.text = "Подтвердите PIN"
+        clearDots()
+        secondPassword = ""
+        hiddenTextField.text = ""
+    }
+    
+    // - MARK: Update dots
+    
+    private func updateDots() {
+        let currentPassword = isFirstStep ? firstPassword : secondPassword
         
-        centerYConstraint?.update(offset: 0)
-        
-        UIView.animate(withDuration: duration) {
-            self.view.layoutIfNeeded()
+        for (index, dotView) in dotViews.enumerated() {
+            let isFilled = index < currentPassword.count
+            dotView.image = UIImage(systemName: isFilled ? "circle.fill" : "circle")
+        }
+    }
+    
+    // - MARK: Clear dots
+    
+    private func clearDots() {
+        for dotView in dotViews {
+            dotView.image = UIImage(systemName: "circle")
         }
     }
     
     
-    private func configureNotifiacations() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(keyboardWillShow),
-            name: UIResponder.keyboardWillShowNotification,
-            object: nil
-        )
-        
-        
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(keyboardWillHide),
-            name: UIResponder.keyboardWillHideNotification,
-            object: nil
-        )
-        
+    // - MARK: Animation wrong PIN
+    
+    private func shakeAnimation() {
+        UIView.animate(withDuration: 0.1, animations: {
+            self.dotsContainer.transform = CGAffineTransform(translationX: 10, y: 0)
+        }) { _ in
+            UIView.animate(withDuration: 0.1, animations: {
+                self.dotsContainer.transform = CGAffineTransform(translationX: -10, y: 0)
+            }) { _ in
+                UIView.animate(withDuration: 0.1) {
+                    self.dotsContainer.transform = .identity
+                } completion: { _ in
+                    self.startFirstStep()
+                }
+            }
+        }
     }
     
-    // - MARK: Tap gesture
+    // - MARK: Check passwords
     
-    @objc func tapDetected() {
-        view.endEditing(true)
+    private func checkPasswords() {
+        if firstPassword == secondPassword {
+            AudioServicesPlaySystemSound(1057)
+            SaveLoadManager().savePassword(firstPassword)
+            performNavigationToMain()
+        } else {
+            shakeAnimation()
+            AudioServicesPlaySystemSound(1053)
+        }
     }
-    
-    // - MARK: Navigation
-    private func performNavigationToMain() {
-        let controller = MainViewController()
-        
-        let navController = UINavigationController(rootViewController: controller)
-        navController.setNavigationBarHidden(true, animated: false)
-        
-        GlobalCoordinator.window?.rootViewController = navController
-        GlobalCoordinator.window?.makeKeyAndVisible()
-    }
-    
 }
 
+
+// - MARK: Navigation
+private func performNavigationToMain() {
+    let controller = MainViewController()
+    
+    let navController = UINavigationController(rootViewController: controller)
+    navController.setNavigationBarHidden(true, animated: false)
+    
+    GlobalCoordinator.window?.rootViewController = navController
+    GlobalCoordinator.window?.makeKeyAndVisible()
+}
+
+extension CreatePasswordViewController: UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard range.length <= 1 else { return true }
+        
+        let currentText = textField.text ?? ""
+        let newText = (currentText as NSString).replacingCharacters(in: range, with: string)
+        let limitedText = String(newText.prefix(4))
+        
+        AudioServicesPlaySystemSound(1104)
+       
+        if isFirstStep {
+            firstPassword = limitedText
+            if firstPassword.count == 4 {
+                UIView.animate(withDuration: 0.3, animations: {
+                    self.dotsContainer.alpha = 0.5
+                }) { _ in
+                    self.startSecondStep()
+                }
+            }
+        } else {
+            secondPassword = limitedText
+            if secondPassword.count == 4 {
+                UIView.animate(withDuration: 0.3) {
+                    self.dotsContainer.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+                } completion: { _ in
+                    self.checkPasswords()
+                }
+            }
+        }
+        
+        updateDots()
+        return true
+    }
+}

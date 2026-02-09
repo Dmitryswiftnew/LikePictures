@@ -18,7 +18,7 @@ final class ImageCell: UICollectionViewCell {
         super.init(frame: frame)
         configureUI()
         contentView.layer.borderWidth = 2
-        contentView.layer.borderColor = UIColor.red.cgColor
+//        contentView.layer.borderColor = UIColor.red.cgColor
     }
     
     required init?(coder: NSCoder) {
