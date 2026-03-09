@@ -1,6 +1,4 @@
-
 import Foundation
-
 
 extension UserDefaults {
     
@@ -14,6 +12,4 @@ extension UserDefaults {
         guard let data = data(forKey: key) else { return nil }
         return try? JSONDecoder().decode(decodableType, from: data)
     }
-    
-    
 }

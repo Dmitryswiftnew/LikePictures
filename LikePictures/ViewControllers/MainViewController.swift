@@ -13,7 +13,6 @@ final class MainViewController: UIViewController {
         collectionView.backgroundColor = .systemGray
         collectionView.delegate = self
         collectionView.dataSource = self
-        
         return collectionView
     }()
     
@@ -47,9 +46,9 @@ final class MainViewController: UIViewController {
         
         view.addSubview(sortButton)
         sortButton.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(60)
-            make.trailing.equalToSuperview().inset(16)
-            make.size.equalTo(44)
+            make.top.equalToSuperview().offset(Constants.Offsets.topOffsetSortButton)
+            make.trailing.equalToSuperview().inset(Constants.Offsets.baseOffset)
+            make.size.equalTo(Constants.ViewSize.sortButtomSize)
         }
         
         let actionSortButton = UIAction { _ in
@@ -60,9 +59,9 @@ final class MainViewController: UIViewController {
         
         view.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
-            make.left.right.equalToSuperview().inset(16)
-            make.top.equalTo(sortButton.snp.bottom).offset(20)
-            make.bottom.equalToSuperview().inset(16)
+            make.left.right.equalToSuperview().inset(Constants.Offsets.baseOffset)
+            make.top.equalTo(sortButton.snp.bottom).offset(Constants.Offsets.baseOffset)
+            make.bottom.equalToSuperview().inset(Constants.Offsets.baseOffset)
         }
     }
     
@@ -76,7 +75,6 @@ final class MainViewController: UIViewController {
         }
     }
     
-    
     // - MARK: Add Image item to collection
     
     func addImageItem(_ item: ImageItem) {
@@ -84,7 +82,6 @@ final class MainViewController: UIViewController {
         saveManager.saveUserImages(userImageItems)
         collectionView.reloadData()
     }
-    
     
     // - MARK: SortButtton tap
     
@@ -115,15 +112,12 @@ final class MainViewController: UIViewController {
         collectionView.reloadData()
     }
     
-    
-    
     // - MARK: AddImageViewController transfer
     
     private func showAddImageViewController() {
         let addImageViewController = AddImageViewController()
         navigationController?.pushViewController(addImageViewController, animated: true )
     }
-    
 }
 
 extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -152,15 +146,15 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
                         minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        8
+        CGFloat(Constants.collectionViewSpacingAndSize.minimumLineSpacingForSectionAt)
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, 
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
                         minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        8
+        CGFloat(Constants.collectionViewSpacingAndSize.minimumInteritemSpacingForSectionAt)
     }
     
-  
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = (collectionView.frame.width - 32) / CGFloat(4)
@@ -199,7 +193,6 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
         collectionView.cellForItem(at: indexPath)?.layer.borderColor = UIColor.systemBlue.cgColor
     }
     
-    
     func clearAllSelectionBorders() {
         for i in 1..<collectionView.numberOfItems(inSection: 0) {
             let indexPath = IndexPath(item: i, section: 0)
@@ -207,5 +200,4 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
             collectionView.cellForItem(at: indexPath)?.layer.borderColor = UIColor.black.cgColor
         }
     }
-    
 }

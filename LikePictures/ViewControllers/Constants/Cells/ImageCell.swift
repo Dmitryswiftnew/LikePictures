@@ -1,8 +1,6 @@
-
 import Foundation
 import UIKit
 import SnapKit
-
 
 final class ImageCell: UICollectionViewCell {
     static var identifier: String { "\(Self.self)" }
@@ -18,13 +16,11 @@ final class ImageCell: UICollectionViewCell {
         super.init(frame: frame)
         configureUI()
         contentView.layer.borderWidth = 2
-//        contentView.layer.borderColor = UIColor.red.cgColor
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
     
     private func configureUI() {
         contentView.addSubview(userImageView)

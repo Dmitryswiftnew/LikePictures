@@ -1,4 +1,3 @@
-
 import Foundation
 
 final class ImageItem: Codable {
@@ -13,5 +12,4 @@ final class ImageItem: Codable {
         self.description = description
         self.isLiked = isLiked
     }
-    
 }

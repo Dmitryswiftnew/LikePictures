@@ -27,41 +27,26 @@ final class EnterPasswordViewController: UIViewController {
     private let instructionLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
-        label.font = .systemFont(ofSize: 18, weight: .medium)
+        label.font = .systemFont(ofSize: CGFloat(Constants.FontSize.fontSizeLabel), weight: .medium)
         label.textAlignment = .center
-        label.text = "Чтоб войти введите свой PIN"
+        label.text = "To log in, enter your PIN".localized
         return label
     }()
     
     private let dotsStackView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .horizontal
-        stack.spacing = 20
+        stack.spacing = CGFloat(Constants.FontSize.spacing)
         stack.distribution = .fillEqually
         return stack
     }()
     
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
         enterStep()
-//                                          //////
-        let manager = SaveLoadManager()
-            manager.resetPassword()
-            
-            
-            let createVC = CreatePasswordViewController()
-            let navController = UINavigationController(rootViewController: createVC)
-            
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-               let window = windowScene.windows.first {
-                window.rootViewController = navController
-            }
-        
-        //                            /////
     }
-
     
     // - MARK: CofigureUI
     
@@ -69,7 +54,6 @@ final class EnterPasswordViewController: UIViewController {
         view.backgroundColor = .black
         
         dotViews.forEach { dotsStackView.addArrangedSubview($0) }
-        
         
         dotsContainer.addSubview(dotsStackView)
         dotsStackView.snp.makeConstraints { make in
@@ -79,15 +63,15 @@ final class EnterPasswordViewController: UIViewController {
         view.addSubview(dotsContainer)
         dotsContainer.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.centerY.equalToSuperview().offset(-50)
-            make.width.equalTo(200)
-            make.height.equalTo(40)
+            make.centerY.equalToSuperview().offset(-Constants.Offsets.centerYOffsetMiddle)
+            make.width.equalTo(Constants.ViewSize.dotsContWidth)
+            make.height.equalTo(Constants.ViewSize.dotsContWidthHeight)
         }
         
         view.addSubview(instructionLabel)
         instructionLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalTo(dotsContainer.snp.top).offset(-30)
+            make.bottom.equalTo(dotsContainer.snp.top).offset(-Constants.Offsets.offsetMiddle)
         }
         
         view.addSubview(hiddenTextField)
@@ -102,7 +86,7 @@ final class EnterPasswordViewController: UIViewController {
         dotsContainer.alpha = 1
         updateDots()
     }
-        
+    
     
     // - MARK: Update dots
     
@@ -122,7 +106,6 @@ final class EnterPasswordViewController: UIViewController {
         }
     }
     
-    
     // - MARK: Animation wrong PIN
     
     private func shakeAnimation() {
@@ -141,7 +124,6 @@ final class EnterPasswordViewController: UIViewController {
         }
     }
     
-        
     private func checkPasswords() {
         let manager = SaveLoadManager()
         
@@ -152,14 +134,13 @@ final class EnterPasswordViewController: UIViewController {
         if enterPassword == savedPassword {
             performNavigationToMain()
         } else {
-            AudioServicesPlaySystemSound(1053)
-            showErrorAlert(title: "Неверный PIN", message: "Попробуйте еще раз")
+            AudioServicesPlaySystemSound(SystemSoundID(Constants.MusicFont.badPassword))
+            showErrorAlert(title: "Incorrect PIN".localized, message: "Try again".localized)
             shakeAnimation()
         }
         
     }
     
-  
     // - MARK: Navigation
     
     private func performNavigationToMain() {
@@ -171,9 +152,7 @@ final class EnterPasswordViewController: UIViewController {
         GlobalCoordinator.window?.rootViewController = navController
         GlobalCoordinator.window?.makeKeyAndVisible()
     }
-    
 }
-
 
 extension EnterPasswordViewController: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
@@ -181,16 +160,15 @@ extension EnterPasswordViewController: UITextFieldDelegate {
         
         let currentText = textField.text ?? ""
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string)
-        let limitedText = String(newText.prefix(4))
+        let limitedText = String(newText.prefix(Constants.PasswordDigits.passwordDigit))
         
         enterPassword = limitedText
         
-        AudioServicesPlaySystemSound(1104)
+        AudioServicesPlaySystemSound(SystemSoundID(Constants.MusicFont.createPassword))
         
-        if enterPassword.count == 4 {
-                self.checkPasswords()
+        if enterPassword.count == Constants.PasswordDigits.passwordDigit {
+            self.checkPasswords()
         }
-        
         updateDots()
         return true
     }
