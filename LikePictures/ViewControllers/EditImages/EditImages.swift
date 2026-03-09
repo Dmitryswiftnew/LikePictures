@@ -1,4 +1,3 @@
-
 import Foundation
 import UIKit
 import SnapKit
@@ -10,20 +9,20 @@ final class EditImages: UIViewController {
     private var imageIndex: Int
     private var saveManager = SaveLoadManager()
     private var allImageItems: [ImageItem] = []
-    private var currentIndex: Int = 0
+    private var currentIndex: Int = Constants.index.currentIndexZero
     private var isZoomed = false
     private var originalFrame: CGRect = .zero
     private var dismissTapGesture: UITapGestureRecognizer?
     
     init(imageIndex: Int) {
-           self.imageIndex = imageIndex
-           super.init(nibName: nil, bundle: nil)
-       }
-       
-       required init?(coder: NSCoder) {
-           fatalError("init(coder:) has not been implemented")
-       }
-        
+        self.imageIndex = imageIndex
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private let mainContainerView: UIView = {
         let view = UIView()
         view.isUserInteractionEnabled = true
@@ -36,7 +35,6 @@ final class EditImages: UIViewController {
         return view
     }()
     
-
     private var buttonBack: UIButton = {
         let button = UIButton(type: .system)
         let backImage = UIImage(systemName: "chevron.left")
@@ -58,7 +56,6 @@ final class EditImages: UIViewController {
         let emptyImage = UIImage(systemName: "heart")?
             .withTintColor(.gray, renderingMode: .alwaysOriginal)
         button.setImage(emptyImage, for: .normal)
-        
         
         let filledImage = UIImage(systemName: "heart.fill")?
             .withTintColor(.red, renderingMode: .alwaysOriginal)
@@ -83,19 +80,18 @@ final class EditImages: UIViewController {
         return image
     }()
     
-    
     private var textFiled: UITextField = {
         let textField = UITextField()
         let attributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor.black,
-            .font: UIFont.systemFont(ofSize: 20,weight: .regular)
+            .font: UIFont.systemFont(ofSize: CGFloat(Constants.FontSize.fontSizeLabel),weight: .regular)
         ]
-        textField.attributedPlaceholder = NSAttributedString(string: "Add description", attributes: attributes)
+        textField.attributedPlaceholder = NSAttributedString(string: "Add description".localized, attributes: attributes)
         textField.borderStyle = .roundedRect
         textField.backgroundColor = .white.withAlphaComponent(0.5)
         textField.layer.borderColor = UIColor.white.cgColor
-        textField.layer.borderWidth = 2
-        textField.layer.cornerRadius = 12
+        textField.layer.borderWidth = CGFloat(Constants.TextFieldSize.borderWidth)
+        textField.layer.cornerRadius = CGFloat(Constants.TextFieldSize.cornerRadius)
         return textField
     }()
     
@@ -125,7 +121,7 @@ final class EditImages: UIViewController {
         let label = UILabel()
         label.textColor = .black
         label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 10, weight: .semibold)
+        label.font = UIFont.systemFont(ofSize: CGFloat(Constants.FontSize.fontSizeLabel), weight: .semibold)
         return label
     }()
     
@@ -154,11 +150,9 @@ final class EditImages: UIViewController {
     
     // - MARK: Configure UI
     
-    
     private func configureUI() {
         view.backgroundColor = .lightGray
         
-     
         view.addSubview(mainContainerView)
         mainContainerView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -167,17 +161,16 @@ final class EditImages: UIViewController {
         mainContainerView.addSubview(imageContainer)
         imageContainer.snp.makeConstraints { make in
             make.centerX.centerY.equalToSuperview()
-            make.left.right.equalToSuperview().inset(16)
+            make.left.right.equalToSuperview().inset(Constants.Offsets.baseOffset)
             make.height.equalToSuperview().dividedBy(2)
             self.centerYConstraint = make.centerY.equalTo(mainContainerView).constraint
         }
         
-        
         mainContainerView.addSubview(buttonHeaderContainer)
         buttonHeaderContainer.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(50)
-            make.left.right.equalToSuperview().inset(16)
-            make.height.equalToSuperview().dividedBy(20)
+            make.top.equalToSuperview().offset(Constants.Offsets.centerYOffsetMiddle)
+            make.left.right.equalToSuperview().inset(Constants.Offsets.baseOffset)
+            make.height.equalToSuperview().dividedBy(Constants.Offsets.heightDivide)
         }
         
         buttonHeaderContainer.addSubview(buttonBack)
@@ -190,7 +183,7 @@ final class EditImages: UIViewController {
             self.backButtonPressed()
         }
         buttonBack.addAction(actionButtonBack, for: .touchUpInside)
-      
+        
         buttonHeaderContainer.addSubview(likeButton)
         likeButton.snp.makeConstraints { make in
             make.centerX.centerY.equalToSuperview()
@@ -206,7 +199,7 @@ final class EditImages: UIViewController {
             make.right.equalToSuperview()
             make.centerY.equalToSuperview()
         }
-       
+        
         let actionCancel = UIAction { [weak self] _ in
             self?.showExitConfirmAlert {
                 self?.navigationController?.popViewController(animated: true)
@@ -228,7 +221,6 @@ final class EditImages: UIViewController {
         }
         imageViewSecond.isHidden = true
         
-        
         imageContainer.addSubview(textFiled)
         textFiled.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
@@ -236,21 +228,20 @@ final class EditImages: UIViewController {
             make.height.equalToSuperview().multipliedBy(1.0 / 9.0)
         }
         
-       
+        
         imageContainer.addSubview(countLabel)
         countLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.top.equalTo(photoImage.snp.bottom)
             make.bottom.equalTo(textFiled.snp.top)
-            make.height.equalToSuperview().dividedBy(20)
+            make.height.equalToSuperview().dividedBy(Constants.Offsets.heightDivide)
         }
-        
         
         mainContainerView.addSubview(buttonContainer)
         buttonContainer.snp.makeConstraints { make in
             make.top.equalTo(imageContainer.snp.bottom)
             make.left.right.equalTo(imageContainer)
-            make.height.equalToSuperview().dividedBy(20)
+            make.height.equalToSuperview().dividedBy(Constants.Offsets.heightDivide)
         }
         
         buttonContainer.addSubview(buttonLeft)
@@ -265,21 +256,19 @@ final class EditImages: UIViewController {
             make.centerX.centerY.equalToSuperview()
         }
         
-        
         let deleteAction = UIAction { _ in
             self.showDeleteConfirmAlert {
                 self.deleteCurrentImage()
-                AudioServicesPlaySystemSound(1075)
+                AudioServicesPlaySystemSound(SystemSoundID(Constants.MusicFont.deleteImage))
             }
         }
         
         deleteButton.addAction(deleteAction, for: .touchUpInside)
         
-        
         let tapImageGesture = UITapGestureRecognizer(target: self, action: #selector(photoImageTapped))
         tapImageGesture.numberOfTapsRequired = 2
         photoImage.addGestureRecognizer(tapImageGesture)
-   
+        
         let actionLeft = UIAction { _ in
             self.buttonLeftFlip() }
         buttonLeft.addAction(actionLeft, for: .touchUpInside)
@@ -287,8 +276,6 @@ final class EditImages: UIViewController {
         let leftSwipeRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(buttonLeftFlip))
         leftSwipeRecognizer.direction = .left
         photoImage.addGestureRecognizer(leftSwipeRecognizer)
-        
-        
         
         buttonContainer.addSubview(buttonRight)
         buttonRight.snp.makeConstraints { make in
@@ -302,13 +289,12 @@ final class EditImages: UIViewController {
         }
         buttonRight.addAction(actionRight, for: .touchUpInside)
         
-        
         let rightSwipeRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(buttonRightFlip))
         rightSwipeRecognizer.direction = .right
         photoImage.addGestureRecognizer(rightSwipeRecognizer)
         
         
-    
+        
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapDetected))
         view.addGestureRecognizer(tapRecognizer)
         
@@ -325,9 +311,7 @@ final class EditImages: UIViewController {
             width: photoImage.frame.width,
             height: photoImage.frame.height
         )
-        
         updateUI()
-    
     }
     
     
@@ -335,7 +319,6 @@ final class EditImages: UIViewController {
         textFiled.endEditing(true)
     }
     
-
     // - MARK: like button tapped
     
     private func likeButttonTaped() {
@@ -355,7 +338,6 @@ final class EditImages: UIViewController {
     private func updateUI() {
         let currentItem = allImageItems[currentIndex]
         
-        
         if let image = saveManager.loadImage(name: currentItem.fileName) {
             photoImage.image = image
         }
@@ -367,7 +349,7 @@ final class EditImages: UIViewController {
         
     }
     
-   // - MARK: Flip Left and Right
+    // - MARK: Flip Left and Right
     
     @objc private func buttonRightFlip() {
         imageViewSecond.isHidden = false
@@ -465,11 +447,8 @@ final class EditImages: UIViewController {
         textFiled.isHidden = true
         countLabel.isHidden = true
         
-        
         addDismissGesture()
         isZoomed = true
-        
-        
     }
     
     private func zoomOut() {
@@ -523,7 +502,6 @@ final class EditImages: UIViewController {
         zoomOut()
     }
     
-    
     // - MARK: Delete current image
     
     private func deleteCurrentImage() {
@@ -540,7 +518,6 @@ final class EditImages: UIViewController {
         }
     }
     
-    
     private func animateDeleteLeft(completion: @escaping () -> Void) {
         let centerX = photoImage.frame.midX - imageViewSecond.frame.width / 2
         
@@ -550,7 +527,6 @@ final class EditImages: UIViewController {
         }
         imageViewSecond.frame.origin.x = centerX
         imageViewSecond.isHidden = false
-        
         
         UIView.animate(withDuration: 0.4) {
             self.photoImage.frame.origin.x = -self.photoImage.frame.width
@@ -563,15 +539,12 @@ final class EditImages: UIViewController {
         }
     }
     
-
     // - MARK: Back button navigation
     
-   private func backButtonPressed() {
-       updateCurrentImageItem()
-       navigationController?.popViewController(animated: true)
+    private func backButtonPressed() {
+        updateCurrentImageItem()
+        navigationController?.popViewController(animated: true)
     }
-    
-    
     
     // - MARK: Keybord switch
     
@@ -583,8 +556,8 @@ final class EditImages: UIViewController {
         centerYConstraint?.update(offset: -keyboardFrame.height / 2)
         
         UIView.animate(withDuration: duration) {
-              self.view.layoutIfNeeded()
-          }
+            self.view.layoutIfNeeded()
+        }
     }
     
     @objc func keyboardWillHide(_ notification: Notification) {
@@ -599,7 +572,6 @@ final class EditImages: UIViewController {
         }
     }
     
-    
     private func configureNotifiacations() {
         NotificationCenter.default.addObserver(
             self,
@@ -608,20 +580,15 @@ final class EditImages: UIViewController {
             object: nil
         )
         
-        
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(keyboardWillHide),
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
-        
     }
-    
-    
-    
 }
-    
-    
-    
+
+
+
 

@@ -2,7 +2,6 @@ import Foundation
 import  UIKit
 import KeychainSwift
 
-
 enum Keys: String {
     case imageKey
 }
@@ -13,9 +12,8 @@ final class SaveLoadManager {
     private var documentsDirectory: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     }
-    
+
     // - MARK: Password
-    
     func savePassword(_ password: String) {
         let keychain = KeychainSwift()
         keychain.set(password, forKey: KeychainKeys.myPassword.rawValue)
@@ -26,7 +24,6 @@ final class SaveLoadManager {
         let keychain = KeychainSwift()
         return keychain.get(KeychainKeys.myPassword.rawValue)
     }
-    
     
     func isPasswordCreated() -> Bool {
         UserDefaults.standard.bool(forKey: UserDefaultsKeys.myFlag.rawValue)
@@ -55,7 +52,6 @@ final class SaveLoadManager {
         }
     }
     
-    
     func loadImage(name: String) -> UIImage? {
         guard let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             return nil
@@ -63,7 +59,6 @@ final class SaveLoadManager {
         let fileURL = directory.appendingPathComponent(name)
         return UIImage(contentsOfFile: fileURL.path)
     }
-    
     
     // - MARK: ImageItem
     
@@ -89,8 +84,5 @@ final class SaveLoadManager {
         
         saveUserImages(items)
     }
-    
-    
-    
 }
 

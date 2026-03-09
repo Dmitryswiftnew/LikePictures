@@ -1,10 +1,3 @@
-//
-//  AppDelegate.swift
-//  LikePictures
-//
-//  Created by Dmitry on 18.12.25.
-//
-
 import UIKit
 
 @main

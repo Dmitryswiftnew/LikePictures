@@ -1,4 +1,3 @@
-
 import UIKit
 
 extension UIViewController {
@@ -13,12 +12,11 @@ extension UIViewController {
         present(alert, animated: true)
     }
     
-   
-    // - MARK: Alert cancel button
+       // - MARK: Alert cancel button
     
     func showExitConfirmAlert(
-        title: String = "Выйти без сохранения",
-        message: String = "Изменения не будут сохранены",
+        title: String = "Exit without saving".localized,
+        message: String = "Changes will not be saved".localized,
         onExit: @escaping () -> Void
     ) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -29,32 +27,30 @@ extension UIViewController {
         
         alert.addAction(exitAction)
         
-        let stayAction = UIAlertAction(title: "Остаться", style: .cancel)
+        let stayAction = UIAlertAction(title: "Stay".localized, style: .cancel)
         alert.addAction(stayAction)
         
         present(alert, animated: true)
-        
     }
     
     // - MARK: Alert delete button
     
     func showDeleteConfirmAlert(
-        title: String = "Удалить изображение?",
-        message: String = "Картинка и комментарий будут удалены навсегда",
+        title: String = "Delete image?".localized,
+        message: String = "The image and comment will be permanently deleted".localized,
         onDelete: @escaping () -> Void
     ) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
-        let deleteAction = UIAlertAction(title: "Удалить", style: .destructive) { _ in
+        let deleteAction = UIAlertAction(title: "Delete".localized, style: .destructive) { _ in
             onDelete()
         }
         
         alert.addAction(deleteAction)
         
-        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel)
+        let cancelAction = UIAlertAction(title: "Cancel".localized, style: .cancel)
         alert.addAction(cancelAction)
         
         present(alert, animated: true)
     }
-
 }

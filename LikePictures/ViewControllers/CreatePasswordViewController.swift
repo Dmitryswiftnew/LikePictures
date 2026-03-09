@@ -29,7 +29,7 @@ final class CreatePasswordViewController: UIViewController {
     private let instructionLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
-        label.font = .systemFont(ofSize: 18, weight: .medium)
+        label.font = .systemFont(ofSize: CGFloat(Constants.FontSize.fontSizeLabel), weight: .medium)
         label.textAlignment = .center
         return label
     }()
@@ -37,7 +37,7 @@ final class CreatePasswordViewController: UIViewController {
     private let dotsStackView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .horizontal
-        stack.spacing = 20
+        stack.spacing = CGFloat(Constants.FontSize.spacing)
         stack.distribution = .fillEqually
         return stack
     }()
@@ -63,15 +63,15 @@ final class CreatePasswordViewController: UIViewController {
         view.addSubview(dotsContainer)
         dotsContainer.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.centerY.equalToSuperview().offset(-50)
-            make.width.equalTo(200)
-            make.height.equalTo(40)
+            make.centerY.equalToSuperview().offset(-Constants.Offsets.centerYOffset)
+            make.width.equalTo(Constants.ViewSize.dotsContWidth)
+            make.height.equalTo(Constants.ViewSize.dotsContWidthHeight)
         }
         
         view.addSubview(instructionLabel)
         instructionLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalTo(dotsContainer.snp.top).offset(-30)
+            make.bottom.equalTo(dotsContainer.snp.top).offset(-Constants.Offsets.offsetMiddle)
         }
         view.addSubview(hiddenTextField)
         hiddenTextField.delegate = self
@@ -83,7 +83,7 @@ final class CreatePasswordViewController: UIViewController {
         isFirstStep = true
         firstPassword = ""
         hiddenTextField.text = ""
-        instructionLabel.text = "Создайте 4-значный PIN"
+        instructionLabel.text = "Create a 4-digit PIN".localized
         clearDots()
         dotsContainer.alpha = 1
         updateDots()
@@ -91,7 +91,7 @@ final class CreatePasswordViewController: UIViewController {
     
     private func startSecondStep() {
         isFirstStep = false
-        instructionLabel.text = "Подтвердите PIN"
+        instructionLabel.text = "Confirm your PIN".localized
         clearDots()
         secondPassword = ""
         hiddenTextField.text = ""
@@ -139,16 +139,15 @@ final class CreatePasswordViewController: UIViewController {
     
     private func checkPasswords() {
         if firstPassword == secondPassword {
-            AudioServicesPlaySystemSound(1057)
+            AudioServicesPlaySystemSound(SystemSoundID(Constants.MusicFont.confirmPassword))
             SaveLoadManager().savePassword(firstPassword)
             performNavigationToMain()
         } else {
             shakeAnimation()
-            AudioServicesPlaySystemSound(1053)
+            AudioServicesPlaySystemSound(SystemSoundID(Constants.MusicFont.badPassword))
         }
     }
 }
-
 
 // - MARK: Navigation
 private func performNavigationToMain() {
@@ -169,8 +168,8 @@ extension CreatePasswordViewController: UITextFieldDelegate {
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string)
         let limitedText = String(newText.prefix(4))
         
-        AudioServicesPlaySystemSound(1104)
-       
+        AudioServicesPlaySystemSound(SystemSoundID(Constants.MusicFont.createPassword))
+        
         if isFirstStep {
             firstPassword = limitedText
             if firstPassword.count == 4 {
@@ -190,7 +189,6 @@ extension CreatePasswordViewController: UITextFieldDelegate {
                 }
             }
         }
-        
         updateDots()
         return true
     }

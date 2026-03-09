@@ -1,0 +1,17 @@
+
+"Create a 4-digit PIN" = "Создайте 4-x значный PIN";
+"Confirm your PIN" = "Подтвердите PIN";
+"To log in, enter your PIN" = "Для входа введите свой PIN";
+"Incorrect PIN" = "Неверный PIN";
+"Try again" = "Попробуйте еще раз";
+"Add description" = "Добавить описание";
+"Chose media source" = "Выбирите источник медиа";
+"Camera" = "Камера";
+"Photo Library" = "Библиотека фото";
+"Cancel" = "Отмена";
+"Exit without saving" = "Выйти без сохранения";
+"Changes will not be saved" = "Изменения не будут сохранены";
+"Stay" = "Остаться";
+"Delete image?" = "Удалить изображение?";
+"The image and comment will be permanently deleted" = "Изображение и комментарий будут удалены навсегда";
+"Delete" = "Удалить";
